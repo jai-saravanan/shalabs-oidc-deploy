@@ -12,22 +12,19 @@ proving who it is to AWS with OpenID Connect instead of stored keys.
    it **Public**. Actions is already on in a repository made from a template.
 2. Open your repository in **Codespaces** (Code → Codespaces → Create
    codespace on main), or clone it and use Node 22.
-3. Copy `.env.example` to `.env` and put your lab code from ShaLabs after
-   `VITE_LAB_CODE=`.
-4. Run:
+3. Run:
 
    ```bash
    npm install
    npm run dev
    ```
 
-5. Open the page. It shows your **Lab code**: the same code your deploy
-   carries at the end.
+4. Open the page: your portfolio, with your GitHub name on it.
 
 ## 2. Deploy it
 
 After you have registered GitHub as an identity provider in AWS, created your
-bucket and your deploy role (the ShaLabs steps walk you through it), set three
+bucket and your deploy role (the ShaLabs steps walk you through it), set two
 repository **variables** under Settings → Secrets and variables → Actions →
 Variables:
 
@@ -35,12 +32,11 @@ Variables:
 |---|---|
 | `AWS_ROLE_ARN` | your deploy role's ARN |
 | `BUCKET` | your bucket's name |
-| `LAB_CODE` | your lab code |
 
 Then Actions → **Deploy to S3** → **Run workflow**. The log shows the job
 assuming your role with OIDC, then uploading the site. Open the address the
-last step prints: the same page as on your machine, with the same code.
+last step prints: your site, live. Its footer shows the commit it was built from.
 
-None of the three values is a secret, and no secret is needed: the job asks
+Neither value is a secret, and no secret is needed: the job asks
 GitHub for a short-lived token (`permissions: id-token: write`) and AWS trades
 it for credentials that last 15 minutes.

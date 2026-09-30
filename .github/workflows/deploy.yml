@@ -4,11 +4,10 @@
 # configure-aws-credentials trades it with AWS STS for one-hour-or-less
 # credentials of the role in AWS_ROLE_ARN, which trusts only this repository.
 #
-# Set three repository VARIABLES (Settings → Secrets and variables → Actions →
-# Variables). None of them is a secret:
+# Set two repository VARIABLES (Settings → Secrets and variables → Actions →
+# Variables). Neither is a secret:
 #   AWS_ROLE_ARN   the ARN of your deploy role
 #   BUCKET         your bucket's name
-#   LAB_CODE       your lab code from ShaLabs
 name: Deploy to S3
 
 on:
@@ -26,19 +25,21 @@ concurrency:
 
 jobs:
   deploy:
+    # A push before both variables are set (a new repository's first commit
+    # included) skips the job rather than failing it. Run workflow always
+    # runs, so a missing variable is named by the check below.
+    if: github.event_name == 'workflow_dispatch' || (vars.AWS_ROLE_ARN != '' && vars.BUCKET != '')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
       BUCKET: ${{ vars.BUCKET }}
-      LAB_CODE: ${{ vars.LAB_CODE }}
     steps:
       - name: Check the repository variables
         run: |
           missing=""
           [ -n "$AWS_ROLE_ARN" ] || missing="$missing AWS_ROLE_ARN"
           [ -n "$BUCKET" ] || missing="$missing BUCKET"
-          [ -n "$LAB_CODE" ] || missing="$missing LAB_CODE"
           if [ -n "$missing" ]; then
             echo "::error::Set the repository variables first:$missing (Settings > Secrets and variables > Actions > Variables)."
             exit 1
@@ -58,18 +59,15 @@ jobs:
           cache: npm
 
       - name: Install and build
-        env:
-          VITE_LAB_CODE: ${{ vars.LAB_CODE }}
         run: |
           npm ci
           npm run build
 
       - name: Record this deploy
         run: |
-          code="$(printf '%s' "$LAB_CODE" | tr -d '[:space:]' | tr '[:lower:]' '[:upper:]')"
           mkdir -p dist/.deploy
           {
-            echo "lab-code=$code"
+            echo "repository=$GITHUB_REPOSITORY"
             echo "run-id=$GITHUB_RUN_ID"
             echo "commit=$GITHUB_SHA"
           } > dist/.deploy/last-run.txt

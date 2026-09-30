@@ -1,19 +1,27 @@
-import { defineConfig, loadEnv } from "vite";
+import { execSync } from "node:child_process";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// VITE_LAB_CODE comes from .env when you run the app yourself, and from the
-// repository variable LAB_CODE when GitHub Actions builds it. The page shows
-// the code, the same in both places.
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
-  const labCode = (env.VITE_LAB_CODE ?? "").trim().toUpperCase();
+// GitHub Actions sets both when it builds the site; a codespace sets the
+// repository. A clone on your own machine has neither, so the repository
+// comes from its git remote. The page shows what it has, and leaves out
+// what it hasn't.
+const env = process.env;
 
-  return {
-    plugins: [react()],
-    define: {
-      __LAB_CODE__: JSON.stringify(labCode),
-      __COMMIT__: JSON.stringify((env.GITHUB_SHA ?? "").slice(0, 7)),
-    },
-    server: { host: true, port: 5173 },
-  };
+function repositoryFromRemote() {
+  try {
+    const url = execSync("git remote get-url origin", { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+    return url.match(/github\.com[/:]([^/]+\/[^/]+?)(?:\.git)?$/)?.[1] ?? "";
+  } catch {
+    return "";
+  }
+}
+
+export default defineConfig({
+  plugins: [react()],
+  define: {
+    __REPO__: JSON.stringify(env.GITHUB_REPOSITORY || repositoryFromRemote()),
+    __COMMIT__: JSON.stringify((env.GITHUB_SHA ?? "").slice(0, 7)),
+  },
+  server: { host: true, port: 5173 },
 });
