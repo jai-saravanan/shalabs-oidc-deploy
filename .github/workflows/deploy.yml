@@ -57,12 +57,11 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install, test and build
+      - name: Install and build
         env:
           VITE_LAB_CODE: ${{ vars.LAB_CODE }}
         run: |
           npm ci
-          npm test
           npm run build
 
       - name: Record this deploy

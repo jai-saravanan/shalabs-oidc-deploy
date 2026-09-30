@@ -6,24 +6,23 @@ proving who it is to AWS with OpenID Connect instead of stored keys.
 
 ## 1. Run it first
 
-1. **Fork** this repository (keep the name `shalabs-oidc-deploy`).
-2. In your fork, open **Actions** and choose **I understand my workflows, go
-   ahead and enable them** — a fork starts with Actions off.
-3. Open the fork in **Codespaces** (Code → Codespaces → Create codespace), or
-   clone it and use Node 22.
-4. Copy `.env.example` to `.env` and put your lab code from ShaLabs after
+1. Make your own repository from this template: **Use this template** →
+   **Create a new repository** (ShaLabs' **Create my repository** button opens
+   that page already filled in). Keep the name `shalabs-oidc-deploy` and keep
+   it **Public**. Actions is already on in a repository made from a template.
+2. Open your repository in **Codespaces** (Code → Codespaces → Create
+   codespace on main), or clone it and use Node 22.
+3. Copy `.env.example` to `.env` and put your lab code from ShaLabs after
    `VITE_LAB_CODE=`.
-5. Run:
+4. Run:
 
    ```bash
    npm install
    npm run dev
    ```
 
-6. Open the page. Enter the **Verification** value it shows in ShaLabs.
-
-The verification value is a learning check, not a secret: `verification.js`
-shows exactly how it is made.
+5. Open the page. It shows your **Lab code**: the same code your deploy
+   carries at the end.
 
 ## 2. Deploy it
 

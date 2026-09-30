@@ -1,5 +1,4 @@
 const labCode = __LAB_CODE__;
-const verification = __VERIFICATION__;
 const commit = __COMMIT__;
 
 function whereItRuns(host) {
@@ -27,11 +26,6 @@ export default function App() {
             <span className="label">Lab code</span>
             <code className="value">{labCode}</code>
           </div>
-          <div className="row">
-            <span className="label">Verification</span>
-            <code className="value strong">{verification}</code>
-          </div>
-          <p className="hint">Enter the verification value in ShaLabs to start the AWS part of the lab.</p>
         </section>
       ) : (
         <section className="card warn" role="alert">
